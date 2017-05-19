@@ -1,25 +1,114 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: "Assignment_Course Project 1"
+author: "Asmaa Altanany"
+date: "١٨ مايو، ٢٠١٧"
+output: html_document
 ---
 
+#Loading and preprocessing the data
 
-## Loading and preprocessing the data
+1-Load the data (i.e. read.csv())
+
+```{r}
+activity_data<- read.csv("activity.csv", header = TRUE)
+head(activity_data)
+
+```
+2-Process/transform the data (if necessary) into a format suitable for your analysis
+-----------------------------------------------------------------
+
+##What is mean total number of steps taken per day?
+
+1-Calculate the total number of steps taken per day
+
+```{r}
+steps <- aggregate(steps~date, activity_data, FUN = sum)
+head(steps)
+
+```
+2-Make a histogram of the total number of steps taken each day
+```{r}
+hist(steps$steps, col="red", xlab = "Frequency", ylab = "Steps",
+     main = "Histogram_of_total_steps_each_day")
+```
+3-Calculate and report the mean and median of the total number of steps taken per day
+
+```{r}
+mean1 <- mean(steps$steps)
+mean1
+median1 <- median(steps$steps)
+median1
+
+```
+
+###What is the average daily activity pattern?
+
+1-Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+
+```{r}
+inter <- aggregate(steps~interval, activity_data, FUN = sum)
+
+plot(inter$interval, inter$steps, type = "l", lwd = 2, xlab = "five_minutes_average$interval",  ylab = "five_minutes_average$steps", main = "Total Steps per intervals")
 
 
-
-## What is mean total number of steps taken per day?
-
-
-
-## What is the average daily activity pattern?
-
-
-
+```
+2-Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+Using the funtion max() in order to find the max num of steps. 
+```{r}
+maxSteps <- inter[inter$steps == max(inter$steps), ]
+maxSteps
+```
 ## Imputing missing values
 
+Note that there are a number of days/intervals where there are missing values (coded as NA). The presence of missing days may introduce bias into some calculations or summaries of the data.
+
+1-Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
+
+```{r}
 
 
-## Are there differences in activity patterns between weekdays and weekends?
+sum(is.na(activity_data$steps))
+
+
+```
+
+2-Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+
+The strategy will be to fill in the dataset the with the mean of that 5 minute interval
+
+
+
+
+3-Create a new dataset that is equal to the original dataset but with the missing data filled in.
+
+```{r}
+activity_data2 <- activity_data
+sapply(activity_data2, class)
+```
+4-Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+
+```{r}
+steps_day2 <- aggregate(steps~date, activity_data2, FUN = sum)
+hist(steps_day2$steps, col="green", xlab = "Steps", ylab = "Frequency",
+     main = "Total_Steps_per$Day")
+#compare means before and after
+steps_Mean2 <- mean(steps_day2$steps)
+steps_Mean2 - mean1
+
+#median before and after
+stepsMedian2 <- median(steps_day2$steps)
+stepsMedian2 - median1
+
+```
+##Are there differences in activity patterns between weekdays and weekends?
+1-Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
+```{r}
+activity_data2$weekend = chron::is.weekend(activity_data2$date)
+
+```
+
+
+
+
+
+
